@@ -1,0 +1,11 @@
+{
+  "name": "xe3agle",
+  "version": "1.0.0",
+  "private": true,
+  "description": "XE3AGLE — Discipline over impulse",
+  "scripts": {
+    "test": "cd backend && npm test",
+    "syntax": "cd backend && npm run syntax",
+    "start:api": "cd backend && npm start"
+  }
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="black">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Reset password — XE3AGLE</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div class="landing">
+    <div class="landing-logo">XE3AGLE</div>
+    <div class="landing-tag" id="title">Reset password</div>
+    <form id="form" class="landing-actions" style="text-align:left">
+      <div class="field" id="email-field">
+        <label>Email</label>
+        <input type="email" id="email" required>
+      </div>
+      <div class="field" id="pw-field" style="display:none">
+        <label>New password</label>
+        <input type="password" id="password" minlength="8">
+      </div>
+      <button type="submit" class="btn btn-primary" id="btn">Send reset link</button>
+      <p id="msg" class="muted" style="display:none;font-size:0.9rem"></p>
+    </form>
+    <a href="/login.html" class="dim" style="margin-top:24px;font-size:0.85rem">Back to sign in</a>
+  </div>
+  <script type="module">
+    import { api } from './js/services/api.js';
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    const form = document.getElementById('form');
+    const msg = document.getElementById('msg');
+
+    if (token) {
+      document.getElementById('title').textContent = 'Set new password';
+      document.getElementById('email-field').style.display = 'none';
+      document.getElementById('pw-field').style.display = 'block';
+      document.getElementById('password').required = true;
+      document.getElementById('btn').textContent = 'Reset password';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.style.display = 'none';
+      try {
+        if (token) {
+          await api.resetPassword({
+            token,
+            newPassword: document.getElementById('password').value,
+          });
+          msg.textContent = 'Password updated. You can sign in.';
+          msg.style.display = 'block';
+          setTimeout(() => (location.href = '/login.html'), 1500);
+        } else {
+          await api.forgotPassword({ email: document.getElementById('email').value.trim() });
+          msg.textContent = 'If an account exists, reset instructions were sent (check server logs if SMTP is not configured).';
+          msg.style.display = 'block';
+        }
+      } catch (err) {
+        msg.textContent = err.message || 'Failed';
+        msg.className = 'text-danger';
+        msg.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
